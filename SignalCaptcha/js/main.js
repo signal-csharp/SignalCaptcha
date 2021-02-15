@@ -9,23 +9,37 @@
 	var isFirstActivation = true;
 
 	app.onactivated = function (args) {
-		if (args.detail.kind === activation.ActivationKind.voiceCommand) {
-			// TODO: Handle relevant ActivationKinds. For example, if your app can be started by voice commands,
-			// this is a good place to decide whether to populate an input field or choose a different initial view.
-		}
-		else if (args.detail.kind === activation.ActivationKind.launch) {
-			// A Launch activation happens when the user launches your app via the tile
-			// or invokes a toast notification by clicking or tapping on the body.
-			if (args.detail.arguments) {
-				// TODO: If the app supports toasts, use this value from the toast payload to determine where in the app
-				// to take the user in response to them invoking a toast notification.
-			}
-			else if (args.detail.previousExecutionState === activation.ApplicationExecutionState.terminated) {
-				// TODO: This application had been suspended and was then terminated to reclaim memory.
-				// To create a smooth user experience, restore application state here so that it looks like the app never stopped running.
-				// Note: You may want to record the time when the app was last suspended and only restore state if they've returned after a short period.
-			}
-		}
+        if (args.detail.kind === activation.ActivationKind.voiceCommand) {
+            // TODO: Handle relevant ActivationKinds. For example, if your app can be started by voice commands,
+            // this is a good place to decide whether to populate an input field or choose a different initial view.
+        }
+        else if (args.detail.kind === activation.ActivationKind.launch) {
+            // A Launch activation happens when the user launches your app via the tile
+            // or invokes a toast notification by clicking or tapping on the body.
+            if (args.detail.arguments) {
+                // TODO: If the app supports toasts, use this value from the toast payload to determine where in the app
+                // to take the user in response to them invoking a toast notification.
+            }
+            else if (args.detail.previousExecutionState === activation.ApplicationExecutionState.terminated) {
+                // TODO: This application had been suspended and was then terminated to reclaim memory.
+                // To create a smooth user experience, restore application state here so that it looks like the app never stopped running.
+                // Note: You may want to record the time when the app was last suspended and only restore state if they've returned after a short period.
+            }
+        }
+        else if (args.detail.kind === activation.ActivationKind.protocol) {
+            const originalUri = args.detail.uri.rawUri;
+            const token = originalUri.substring(16);
+            const newUri = "signalpassback://?" + token;
+            const launcherOptions = new Windows.System.LauncherOptions();
+            launcherOptions.targetApplicationPackageFamilyName = "2383BenediktRadtke.SignalPrivateMessenger_teak1p7hcx9ga";
+            const inputData = new Windows.Foundation.Collections.ValueSet();
+            inputData.insert("token", token);
+            Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(newUri), launcherOptions, inputData).then(function (value) {
+                if (value) {
+                    Windows.UI.ViewManagement.ApplicationView.getForCurrentView().tryConsolidateAsync();
+                }
+            });
+        }
 
 		if (!args.detail.prelaunchActivated) {
 			// TODO: If prelaunchActivated were true, it would mean the app was prelaunched in the background as an optimization.
