@@ -8,7 +8,9 @@
 	var activation = Windows.ApplicationModel.Activation;
 	var isFirstActivation = true;
 
-	app.onactivated = function (args) {
+    app.onactivated = function (args) {
+        const mainContent = document.getElementById("mainContent");
+        mainContent.innerText = "This app should be launched by Signal Private Messenger";
         if (args.detail.kind === activation.ActivationKind.voiceCommand) {
             // TODO: Handle relevant ActivationKinds. For example, if your app can be started by voice commands,
             // this is a good place to decide whether to populate an input field or choose a different initial view.
@@ -34,9 +36,11 @@
             launcherOptions.targetApplicationPackageFamilyName = "2383BenediktRadtke.SignalPrivateMessenger_teak1p7hcx9ga";
             const inputData = new Windows.Foundation.Collections.ValueSet();
             inputData.insert("token", token);
+
             Windows.System.Launcher.launchUriAsync(new Windows.Foundation.Uri(newUri), launcherOptions, inputData).then(function (value) {
                 if (value) {
                     Windows.UI.ViewManagement.ApplicationView.getForCurrentView().tryConsolidateAsync();
+                    mainContent.innerText = "Successfully passed CAPTCHA token to Signal Private Messenger. If Signal Private Messenger wasn't automatically opened please switch to it.";
                 }
             });
         }
