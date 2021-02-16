@@ -30,7 +30,10 @@
         }
         else if (args.detail.kind === activation.ActivationKind.protocol) {
             const originalUri = args.detail.uri.rawUri;
-            const token = originalUri.substring(16);
+            let token = originalUri.substring(16);
+            if (token.endsWith("/")) {
+                token = token.substring(0, token.length - 1);
+            }
             const newUri = "signalpassback://?" + token;
             const launcherOptions = new Windows.System.LauncherOptions();
             launcherOptions.targetApplicationPackageFamilyName = "2383BenediktRadtke.SignalPrivateMessenger_teak1p7hcx9ga";
